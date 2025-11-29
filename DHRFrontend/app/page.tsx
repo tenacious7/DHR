@@ -52,7 +52,7 @@ export default function HealthPortal() {
     }
   }
 
-  // The original `handleLogout` function is no longer relevant in this new context.
+  // The original `handleLogout` function is no longer relevant in this new context..
   // const handleLogout = () => {
   //   router.push("/login")
   // }
