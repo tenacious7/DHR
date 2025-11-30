@@ -1,3 +1,6 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import express from "express";
 import cors from "cors";
 import workerRoutes from "./routes/workerRoutes.js";
@@ -11,7 +14,7 @@ import translateRoutes from "./routes/translateRoutes.js";
 
 const app = express();
 app.use(cors());
-app.use(express.json()); // <--- Make sure you parse JSON body
+app.use(express.json({ limit: '10mb' })); // <--- Make sure you parse JSON body with increased limit for audio
 
 app.get("/", (req, res) => {
   res.send("Hello, welcome to Digital Health Record Backend");
@@ -19,9 +22,9 @@ app.get("/", (req, res) => {
 
 // API Routes
 app.use("/api/worker", workerRoutes);
-// for translation
-
 app.use("/api/translate", translateRoutes);
+
+
 // Doctor Dashboard Routes
 app.use("/api/doctor", doctorRoutes);
 app.use("/api/patient", patientRoutes);
@@ -50,6 +53,7 @@ app.listen(5000, () => {
   console.log("Server running at http://localhost:5000/");
   console.log("Available routes:");
   console.log("  - /api/worker");
+  console.log("  - /api/translate");
   console.log("  - /api/doctor");
   console.log("  - /api/patient");
   console.log("  - /api/prescription");
