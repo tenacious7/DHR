@@ -8,39 +8,6 @@ export default function SehatSetuDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Migrant Population Overview</h1>
-          <p className="text-sm text-gray-600">Real-time health monitoring across Kerala migrant camps</p>
-        </div>
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-            <span className="text-sm text-gray-700">System Online</span>
-          </div>
-          <button className="px-4 py-2 bg-blue-600 text-white rounded-lg flex items-center gap-2 text-sm font-medium hover:bg-blue-700">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-              <path d="M8 1v10M4 8l4 4 4-4M2 14h12" stroke="currentColor" strokeWidth="1.5" fill="none" />
-            </svg>
-            Export Report
-          </button>
-          <button className="relative text-gray-600 hover:text-gray-900 p-2">
-            <MessageCircle size={20} />
-            <span className="absolute top-0 right-0 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
-              1
-            </span>
-          </button>
-          <button className="text-gray-600 hover:text-gray-900 p-2">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="12" cy="12" r="3"></circle>
-              <path d="M12 1v6m0 6v6M4.22 4.22l4.24 4.24m3.08 3.08l4.24 4.24M1 12h6m6 0h6m-18.78 7.78l4.24-4.24m3.08-3.08l4.24-4.24"></path>
-            </svg>
-          </button>
-          <button className="text-gray-700 hover:text-gray-900 font-medium text-sm">Logout</button>
-        </div>
-      </header>
-
       <div className="flex relative">
         {/* Main Content */}
         <main className="flex-1 p-6">

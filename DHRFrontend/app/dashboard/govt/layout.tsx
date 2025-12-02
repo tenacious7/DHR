@@ -253,6 +253,7 @@ function GovtDashboardLayoutContent({ children }: { children: React.ReactNode })
       <div className="flex-1 flex flex-col h-full overflow-hidden relative">
           
         {/* Mobile Header (Visible only on Mobile) */}
+        {pathname !== "/dashboard/govt" && (
         <header className="md:hidden h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 shrink-0 z-20">
             <div className="flex items-center gap-3">
                 <button onClick={() => setDrawerOpen(true)} className="p-2 -ml-2 hover:bg-gray-100 rounded-md">
@@ -268,8 +269,10 @@ function GovtDashboardLayoutContent({ children }: { children: React.ReactNode })
                 </button>
             </div>
         </header>
+       )}
 
         {/* Desktop Header (Sticky at top of content area) */}
+        {pathname !== "/dashboard/govt" && (
         <header className="hidden md:flex h-16 bg-white/80 backdrop-blur-md border-b border-gray-200 items-center justify-between px-6 shrink-0 sticky top-0 z-10">
           <div>
             <h1 className="text-xl font-bold text-gray-900">{currentPageConfig.title}</h1>
@@ -306,6 +309,7 @@ function GovtDashboardLayoutContent({ children }: { children: React.ReactNode })
             ))}
           </div>
         </header>
+       )}
 
         {/* Scrollable Page Content */}
         <main className="flex-1 overflow-y-auto bg-gray-50 p-4 md:p-6 scroll-smooth">
