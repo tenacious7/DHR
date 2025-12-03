@@ -66,7 +66,7 @@ export default function EmergencyPage() {
             <div className="flex items-start gap-4 mb-6">
               <div className="relative">
                 <Image
-                  src="/elderly-woman-profile-photo.jpg"
+                  src="/placeholder-user.jpg"
                   alt="Maria Rodriguez"
                   width={80}
                   height={80}
@@ -186,7 +186,7 @@ export default function EmergencyPage() {
                 <CardContent className="p-4">
                   <div className="flex items-center gap-3 mb-3">
                     <Image
-                      src="/young-woman-profile.png"
+                      src="/placeholder-user.jpg"
                       alt="Sofia Rodriguez"
                       width={40}
                       height={40}
@@ -221,7 +221,7 @@ export default function EmergencyPage() {
                 <CardContent className="p-4">
                   <div className="flex items-center gap-3 mb-3">
                     <Image
-                      src="/male-doctor-profile-photo.jpg"
+                      src="/indian-doctor.jpg"
                       alt="Dr. James Wilson"
                       width={40}
                       height={40}
@@ -304,7 +304,7 @@ export default function EmergencyPage() {
                 <CardContent className="p-4">
                   <div className="flex items-center gap-3 mb-3">
                     <Image
-                      src="/asian-woman-social-worker-profile-photo.jpg"
+                      src="/placeholder-user.jpg"
                       alt="Sarah Chen"
                       width={40}
                       height={40}

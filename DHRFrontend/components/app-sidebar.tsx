@@ -19,14 +19,14 @@ import { Card, CardContent } from "@/components/ui/card"
 
 const menuItems = [
   { icon: Home, label: "Dashboard", href: "/dashboard/worker" },
-  { icon: CreditCard, label: "Health ID", href: "/health-id" },
-  { icon: Syringe, label: "Vaccinations", href: "/vaccinations", badge: "4", badgeColor: "bg-green-500" },
-  { icon: Pill, label: "Medicines", href: "/medicines", badge: "2", badgeColor: "bg-green-500" },
+  { icon: CreditCard, label: "Health ID", href: "/dashboard/worker/health-id" },
+  { icon: Syringe, label: "Vaccinations", href: "/dashboard/worker/vaccinations", badge: "4", badgeColor: "bg-green-500" },
+  { icon: Pill, label: "Medicines", href: "/dashboard/worker/medicines", badge: "2", badgeColor: "bg-green-500" },
   { icon: AlertTriangle, label: "Disease Alerts", href: "/alerts", badge: "1", badgeColor: "bg-red-500" },
-  { icon: Wallet, label: "Rewards", href: "/rewards", badge: "850", badgeColor: "text-gray-600" },
+  { icon: Wallet, label: "Rewards", href: "/dashboard/worker/rewards", badge: "850", badgeColor: "text-gray-600" },
   { icon: Building2, label: "Gov Benefits", href: "/benefits" },
-  { icon: Mic, label: "Voice Talk", href: "/voice-talk" },
-  { icon: Phone, label: "Emergency", href: "/emergency", badge: "SOS", badgeColor: "bg-red-500" },
+  { icon: Mic, label: "Voice Talk", href: "/dashboard/worker/voice-talk" },
+  { icon: Phone, label: "Emergency", href: "/dashboard/worker/emergency", badge: "SOS", badgeColor: "bg-red-500" },
 ]
 
 export function AppSidebar() {
