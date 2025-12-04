@@ -245,7 +245,10 @@ export default function WorkerDashboard() {
         <div>
           <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">Quick Actions</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer bg-blue-50 border-blue-200">
+            <Card
+              className="hover:shadow-lg transition-shadow cursor-pointer bg-blue-50 border-blue-200"
+              onClick={() => router.push("/dashboard/doctor")}
+            >
               <CardContent className="p-6 text-center">
                 <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
                   <Calendar className="h-6 w-6 text-blue-600" />
@@ -254,7 +257,10 @@ export default function WorkerDashboard() {
               </CardContent>
             </Card>
 
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer bg-green-50 border-green-200">
+            <Card
+              className="hover:shadow-lg transition-shadow cursor-pointer bg-green-50 border-green-200"
+              onClick={() => router.push("/dashboard/govt/health-records")}
+            >
               <CardContent className="p-6 text-center">
                 <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
                   <Download className="h-6 w-6 text-green-600" />
@@ -263,7 +269,10 @@ export default function WorkerDashboard() {
               </CardContent>
             </Card>
 
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer bg-purple-50 border-purple-200">
+            <Card
+              className="hover:shadow-lg transition-shadow cursor-pointer bg-purple-50 border-purple-200"
+              onClick={() => router.push("/dashboard/doctor")}
+            >
               <CardContent className="p-6 text-center">
                 <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
                   <Video className="h-6 w-6 text-purple-600" />
@@ -272,7 +281,10 @@ export default function WorkerDashboard() {
               </CardContent>
             </Card>
 
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer bg-yellow-50 border-yellow-200">
+            <Card
+              className="hover:shadow-lg transition-shadow cursor-pointer bg-yellow-50 border-yellow-200"
+              onClick={() => router.push("/dashboard/worker/medicines")}
+            >
               <CardContent className="p-6 text-center">
                 <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-3">
                   <Pill className="h-6 w-6 text-yellow-600" />
@@ -281,7 +293,10 @@ export default function WorkerDashboard() {
               </CardContent>
             </Card>
 
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer bg-red-50 border-red-200">
+            <Card
+              className="hover:shadow-lg transition-shadow cursor-pointer bg-red-50 border-red-200"
+              onClick={() => router.push("/dashboard/govt/health-records")}
+            >
               <CardContent className="p-6 text-center">
                 <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3">
                   <Heart className="h-6 w-6 text-red-600" />
@@ -290,7 +305,10 @@ export default function WorkerDashboard() {
               </CardContent>
             </Card>
 
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer bg-indigo-50 border-indigo-200">
+            <Card
+              className="hover:shadow-lg transition-shadow cursor-pointer bg-indigo-50 border-indigo-200"
+              onClick={() => router.push("/dashboard/worker/health-id")}
+            >
               <CardContent className="p-6 text-center">
                 <div className="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-3">
                   <Share className="h-6 w-6 text-indigo-600" />

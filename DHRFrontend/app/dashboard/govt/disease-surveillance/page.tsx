@@ -1,1327 +1,690 @@
 "use client"
-import { useState } from "react"
 
-export default function Dashboard() {
+import { useState, useEffect } from "react"
+import { ArrowUp, ArrowDown, Users, Activity, AlertTriangle, CheckCircle, Search, Filter, Download, X, ChevronRight, BarChart3, MapPin } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
+import { useSpring, animated, config } from "@react-spring/web"
 
-  interface District {
-  id: number;
-  district: string;
-  icon: string;
-  workers: string;
-  liveRisk: string;
-  predictedRisk: string;
-  highRisk: string;
-  color: string;
-  }
-const [selectedDistrict, setSelectedDistrict] = useState<District | null>(null);
-
+export default function DiseaseSurveillanceDashboard() {
+  const [isLoaded, setIsLoaded] = useState(false)
+  const [selectedDistrict, setSelectedDistrict] = useState<any>(null)
+  const [activeTab, setActiveTab] = useState("overview")
   
+  useEffect(() => {
+    setIsLoaded(true)
+  }, [])
+
+  // React Spring animations
+  const fadeIn = useSpring({
+    from: { opacity: 0, y: 20 },
+    to: { opacity: 1, y: 0 },
+    config: config.molasses,
+    delay: 200
+  })
+
+  const statsSpring = useSpring({
+    from: { scale: 0.8, opacity: 0 },
+    to: { scale: 1, opacity: 1 },
+    config: config.wobbly
+  })
+
+  // Data
   const districts = [
-    {
-      id: 1,
-      district: "Ernakulam",
-      icon: "🔴",
-      workers: "8,247",
-      liveRisk: "Critical - 8.9",
-      predictedRisk: "High - 8.7",
-      highRisk: "23",
-      color: "red",
-    },
-    {
-      id: 2,
-      district: "Thrissur",
-      icon: "🟠",
-      workers: "6,891",
-      liveRisk: "High - 8.1",
-      predictedRisk: "Moderate - 6.4",
-      highRisk: "19",
-      color: "orange",
-    },
-    {
-      id: 3,
-      district: "Kozhikode",
-      icon: "🟡",
-      workers: "4,523",
-      liveRisk: "Moderate - 6.8",
-      predictedRisk: "High - 8.2",
-      highRisk: "12",
-      color: "yellow",
-    },
-    {
-      id: 4,
-      district: "Palakkad",
-      icon: "🟡",
-      workers: "3,847",
-      liveRisk: "Moderate - 5.9",
-      predictedRisk: "Low - 3.8",
-      highRisk: "9",
-      color: "yellow",
-    },
-    {
-      id: 5,
-      district: "Kottayam",
-      icon: "🟢",
-      workers: "2,156",
-      liveRisk: "Low - 3.4",
-      predictedRisk: "Low - 2.9",
-      highRisk: "4",
-      color: "green",
-    },
-    {
-      id: 6,
-      district: "Thiruvananthapuram",
-      icon: "🟢",
-      workers: "1,892",
-      liveRisk: "Low - 2.8",
-      predictedRisk: "Low - 2.3",
-      highRisk: "3",
-      color: "green",
-    },
-    {
-      id: 7,
-      district: "Kannur",
-      icon: "🟡",
-      workers: "3,412",
-      liveRisk: "Moderate - 6.2",
-      predictedRisk: "Moderate - 5.7",
-      highRisk: "8",
-      color: "yellow",
-    },
-    {
-      id: 8,
-      district: "Alappuzha",
-      icon: "🟢",
-      workers: "2,634",
-      liveRisk: "Low - 4.1",
-      predictedRisk: "Low - 3.6",
-      highRisk: "5",
-      color: "green",
-    },
+    { id: 1, district: "Ernakulam", icon: "🔴", workers: "8,247", liveRisk: "Critical - 8.9", predictedRisk: "High - 8.7", highRisk: "23", color: "red", riskLevel: 89 },
+    { id: 2, district: "Thrissur", icon: "🟠", workers: "6,891", liveRisk: "High - 8.1", predictedRisk: "Moderate - 6.4", highRisk: "19", color: "orange", riskLevel: 81 },
+    { id: 3, district: "Kozhikode", icon: "🟡", workers: "4,523", liveRisk: "Moderate - 6.8", predictedRisk: "High - 8.2", highRisk: "12", color: "yellow", riskLevel: 68 },
+    { id: 4, district: "Palakkad", icon: "🟡", workers: "3,847", liveRisk: "Moderate - 5.9", predictedRisk: "Low - 3.8", highRisk: "9", color: "yellow", riskLevel: 59 },
+    { id: 5, district: "Kottayam", icon: "🟢", workers: "2,156", liveRisk: "Low - 3.4", predictedRisk: "Low - 2.9", highRisk: "4", color: "green", riskLevel: 34 },
+    { id: 6, district: "Thiruvananthapuram", icon: "🟢", workers: "1,892", liveRisk: "Low - 2.8", predictedRisk: "Low - 2.3", highRisk: "3", color: "green", riskLevel: 28 },
+    { id: 7, district: "Kannur", icon: "🟡", workers: "3,412", liveRisk: "Moderate - 6.2", predictedRisk: "Moderate - 5.7", highRisk: "8", color: "yellow", riskLevel: 62 },
+    { id: 8, district: "Alappuzha", icon: "🟢", workers: "2,634", liveRisk: "Low - 4.1", predictedRisk: "Low - 3.6", highRisk: "5", color: "green", riskLevel: 41 },
   ]
   
   const alerts = [
-    {
-      id: 1,
-      type: "critical",
-      title: "Critical Safety Violation - Ernakulam",
-      description: "Major construction site reported unsafe scaffolding. Immediate inspection required.",
-      actions: ["Assign Inspector", "View Details"],
-      time: "5 mins ago",
-      icon: "⚠️",
-      bgColor: "#fef2f2",
-      borderColor: "#fca5a5",
-    },
-    {
-      id: 2,
-      type: "warning",
-      title: "Health Complaint Spike - Kozhikode",
-      description: "Fish processing zone reports 12 new respiratory complaints in the last 24 hours.",
-      actions: ["Schedule Inspection", "View Details"],
-      time: "23 mins ago",
-      icon: "🔶",
-      bgColor: "#fef3c7",
-      borderColor: "#fcd34d",
-    },
-    {
-      id: 3,
-      type: "info",
-      title: "AI Prediction Alert - Thrissur",
-      description: "AI model predicts 70% probability of safety incident in industrial zone within 48 hours.",
-      actions: ["Deploy Prevention Team", "View Details"],
-      time: "1 hour ago",
-      icon: "ℹ️",
-      bgColor: "#eff6ff",
-      borderColor: "#93c5fd",
-    },
-    {
-      id: 4,
-      type: "success",
-      title: "Compliance Improvement - Palakkad",
-      description: "Manufacturing belt achieved 98% safety compliance rate, up from 87% last month.",
-      actions: ["View Report", "Share Success"],
-      time: "3 hours ago",
-      icon: "✓",
-      bgColor: "#f0fdf4",
-      borderColor: "#86efac",
-    },
+    { id: 1, type: "critical", title: "Critical Safety Violation - Ernakulam", description: "Major construction site reported unsafe scaffolding. Immediate inspection required.", actions: ["Assign Inspector", "View Details"], time: "5 mins ago", icon: AlertTriangle, bgColor: "bg-red-50", borderColor: "border-red-200", iconColor: "text-red-600", severity: "critical" },
+    { id: 2, type: "warning", title: "Health Complaint Spike - Kozhikode", description: "Fish processing zone reports 12 new respiratory complaints in the last 24 hours.", actions: ["Schedule Inspection", "View Details"], time: "23 mins ago", icon: Activity, bgColor: "bg-amber-50", borderColor: "border-amber-200", iconColor: "text-amber-600", severity: "warning" },
+    { id: 3, type: "info", title: "AI Prediction Alert - Thrissur", description: "AI model predicts 70% probability of safety incident in industrial zone within 48 hours.", actions: ["Deploy Prevention Team", "View Details"], time: "1 hour ago", icon: Search, bgColor: "bg-blue-50", borderColor: "border-blue-200", iconColor: "text-blue-600", severity: "info" },
+    { id: 4, type: "success", title: "Compliance Improvement - Palakkad", description: "Manufacturing belt achieved 98% safety compliance rate, up from 87% last month.", actions: ["View Report", "Share Success"], time: "3 hours ago", icon: CheckCircle, bgColor: "bg-green-50", borderColor: "border-green-200", iconColor: "text-green-600", severity: "success" },
   ]
+
   const stats = [
-    { value: "99.7%", label: "System Uptime", badge: "Live", bgColor: "#2563eb", change: "↑ 0.3% from last month" },
-    { value: "1,247", label: "Active Monitors", badge: "Active", bgColor: "#16a34a", change: "↑ 12% increase" },
-    { value: "847", label: "Predictions Made", badge: "AI", bgColor: "#a855f7", change: "↑ 91.4% accuracy" },
-    { value: "2.3 hrs", label: "Response Time", badge: "Avg", bgColor: "#f97316", change: "↓ 18% faster" },
+    { value: "99.7%", label: "System Uptime", badge: "Live", badgeColor: "bg-gradient-to-r from-green-100 to-emerald-100 text-green-700", icon: Activity, change: "+0.3%", trend: "up", delay: 0 },
+    { value: "1,247", label: "Active Monitors", badge: "Active", badgeColor: "bg-gradient-to-r from-blue-100 to-cyan-100 text-blue-700", icon: Users, change: "+12%", trend: "up", delay: 100 },
+    { value: "847", label: "Predictions Made", badge: "AI", badgeColor: "bg-gradient-to-r from-purple-100 to-violet-100 text-purple-700", icon: Search, change: "+91.4%", trend: "up", delay: 200 },
+    { value: "2.3 hrs", label: "Response Time", badge: "Avg", badgeColor: "bg-gradient-to-r from-orange-100 to-amber-100 text-orange-700", icon: ArrowDown, change: "-18%", trend: "down", delay: 300 },
   ]
 
-  const riskTrendData = [
-    { week: "Week 1", liveRisk: 2.3, predictedRisk: 2.1 },
-    { week: "Week 2", liveRisk: 4.5, predictedRisk: 3.8 },
-    { week: "Week 3", liveRisk: 6.2, predictedRisk: 5.9 },
-    { week: "Week 4", liveRisk: 8.5, predictedRisk: 8.2 },
-  ]
+  // Framer Motion variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.2
+      }
+    }
+  }
 
-  const workerDistributionData = [
-    { name: "Breakdown", value: 27 },
-    { name: "Unbroken", value: 29 },
-    { name: "Others", value: 20 },
-    { name: "Maintenance", value: 15 },
-    { name: "Unassigned", value: 9 },
-  ]
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        type: "spring",
+        stiffness: 100,
+        damping: 12
+      }
+    }
+  }
 
-  const incidentCategoriesData = [
-    { name: "Construction", value: 120 },
-    { name: "Non-injury", value: 85 },
-    { name: "Slip/Trips", value: 62 },
-    { name: "Sprains", value: 45 },
-    { name: "Other", value: 38 },
-  ]
+  const cardVariants = {
+    hidden: { scale: 0.9, opacity: 0 },
+    visible: {
+      scale: 1,
+      opacity: 1,
+      transition: {
+        type: "spring",
+        stiffness: 200,
+        damping: 15
+      }
+    },
+    hover: {
+      scale: 1.02,
+      y: -8,
+      transition: {
+        type: "spring",
+        stiffness: 300,
+        damping: 15
+      }
+    }
+  }
 
-  const workerDistributionColors = ["#3b82f6", "#06b6d4", "#f59e0b", "#a855f7", "#6366f1"]
-  const incidentCategoriesColors = ["#ef4444", "#f97316", "#eab308", "#22c55e", "#06b6d4"]
+  const tableRowVariants = {
+    hidden: { opacity: 0, x: -20 },
+    visible: (i: number) => ({
+      opacity: 1,
+      x: 0,
+      transition: {
+        delay: i * 0.05,
+        duration: 0.3
+      }
+    })
+  }
 
   return (
-    <>
-      <style>{`
-        * {
-          margin: 0;
-          padding: 0;
-          box-sizing: border-box;
-        }
-        body {
-          font-family: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-          background-color: #f8fafc;
-          color: #1e293b;
-          line-height: 1.6;
-        }
-        main {
-          min-height: 100vh;
-          background-color: #f8fafc;
-        }
-        .content-wrapper {
-          padding: 2rem;
-          margin: 0 auto;
-        }
-        .card {
-          background-color: white;
-          border-radius: 0.5rem;
-          border: 1px solid #e2e8f0;
-          padding: 1.5rem;
-          margin-bottom: 2rem;
-        }
-        .card-header {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          margin-bottom: 1.5rem;
-        }
-        .card-title h2 {
-          font-size: 1.125rem;
-          font-weight: bold;
-          color: #1e293b;
-          margin-bottom: 0.25rem;
-        }
-        .card-title p {
-          font-size: 0.875rem;
-          color: #64748b;
-        }
-        .card-actions {
-          display: flex;
-          gap: 0.5rem;
-        }
-        .btn {
-          padding: 0.5rem 1rem;
-          border: 1px solid #cbd5e1;
-          border-radius: 0.5rem;
-          font-size: 0.875rem;
-          font-weight: 500;
-          color: #475569;
-          background-color: white;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 0.5rem;
-          transition: background-color 0.2s;
-        }
-        .btn:hover {
-          background-color: #f1f5f9;
-        }
-        table {
-          width: 100%;
-          font-size: 0.875rem;
-          border-collapse: collapse;
-        }
-        thead {
-          border-bottom: 1px solid #e2e8f0;
-          background-color: #f8fafc;
-        }
-        th {
-          text-align: left;
-          padding: 0.75rem 1rem;
-          font-weight: 600;
-          color: #475569;
-        }
-        tbody tr {
-          border-bottom: 1px solid #e2e8f0;
-          transition: background-color 0.2s;
-        }
-        tbody tr:hover {
-          background-color: #f8fafc;
-        }
-        td {
-          padding: 1rem;
-          color: #475569;
-        }
-        .district-cell {
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-          font-weight: 500;
-          color: #1e293b;
-        }
-        .badge {
-          display: inline-block;
-          padding: 0.25rem 0.5rem;
-          border-radius: 0.375rem;
-          font-size: 0.75rem;
-          font-weight: 600;
-        }
-        .badge-red {
-          background-color: #fee2e2;
-          color: #b91c1c;
-        }
-        .badge-orange {
-          background-color: #fed7aa;
-          color: #b45309;
-        }
-        .badge-yellow {
-          background-color: #fef3c7;
-          color: #b45309;
-        }
-        .badge-green {
-          background-color: #dcfce7;
-          color: #166534;
-        }
-        .view-details-link {
-          color: #2563eb;
-          font-weight: 500;
-          text-decoration: none;
-          cursor: pointer;
-          transition: color 0.2s;
-          border: none;
-          background: none;
-          padding: 0;
-        }
-        .view-details-link:hover {
-          color: #1d4ed8;
-        }
-        .pagination {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          margin-top: 1.5rem;
-          padding-top: 1rem;
-          border-top: 1px solid #e2e8f0;
-        }
-        .pagination-buttons {
-          display: flex;
-          gap: 0.5rem;
-        }
-        .btn-next {
-          padding: 0.5rem 1rem;
-          background-color: #16a34a;
-          color: white;
-          border: none;
-          border-radius: 0.5rem;
-          font-size: 0.875rem;
-          font-weight: 500;
-          cursor: pointer;
-          transition: background-color 0.2s;
-        }
-        .btn-next:hover {
-          background-color: #15803d;
-        }
-        .charts-grid {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 1.5rem;
-          margin-bottom: 2rem;
-        }
-        .chart-card {
-          background-color: white;
-          border-radius: 0.5rem;
-          border: 1px solid #e2e8f0;
-          padding: 1.5rem;
-          display: flex;
-          flex-direction: column;
-          align-items: flex-start;
-          justify-content: flex-start;
-          min-height: 320px;
-          position: relative;
-        }
-        .chart-title {
-          font-size: 1rem;
-          font-weight: 600;
-          color: #1e293b;
-          margin-bottom: 1rem;
-          width: 100%;
-        }
-        .chart-container {
-          width: 100%;
-          height: 240px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-        .alerts-section {
-          background-color: white;
-          border-radius: 0.5rem;
-          border: 1px solid #e2e8f0;
-          padding: 1.5rem;
-          margin-bottom: 2rem;
-        }
-        .alerts-header {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          margin-bottom: 1.5rem;
-        }
-        .alerts-title h3 {
-          font-size: 1.125rem;
-          font-weight: bold;
-          color: #1e293b;
-          margin-bottom: 0.25rem;
-        }
-        .alerts-title p {
-          font-size: 0.875rem;
-          color: #64748b;
-        }
-        .view-all-btn {
-          padding: 0.5rem 1rem;
-          background-color: #fee2e2;
-          color: #dc2626;
-          border: none;
-          border-radius: 0.5rem;
-          font-size: 0.875rem;
-          font-weight: 500;
-          cursor: pointer;
-          transition: background-color 0.2s;
-        }
-        .view-all-btn:hover {
-          background-color: #fecaca;
-        }
-        .alerts-list {
-          display: flex;
-          flex-direction: column;
-          gap: 1rem;
-        }
-        .alert-item {
-          padding: 1rem;
-          border-radius: 0.5rem;
-          border-left: 4px solid #ccc;
-          display: flex;
-          gap: 1rem;
-          align-items: flex-start;
-        }
-        .alert-icon {
-          font-size: 1.5rem;
-          flex-shrink: 0;
-          margin-top: 0.25rem;
-        }
-        .alert-content {
-          flex: 1;
-        }
-        .alert-title {
-          font-weight: 600;
-          color: #1e293b;
-          margin-bottom: 0.25rem;
-          font-size: 0.95rem;
-        }
-        .alert-description {
-          font-size: 0.875rem;
-          color: #64748b;
-          margin-bottom: 0.5rem;
-        }
-        .alert-actions {
-          display: flex;
-          gap: 1rem;
-          align-items: center;
-        }
-        .alert-action-link {
-          font-size: 0.875rem;
-          font-weight: 500;
-          color: #2563eb;
-          text-decoration: none;
-          cursor: pointer;
-          transition: color 0.2s;
-        }
-        .alert-action-link:hover {
-          color: #1d4ed8;
-        }
-        .alert-time {
-          font-size: 0.875rem;
-          color: #94a3b8;
-          flex-shrink: 0;
-        }
-        .stats-grid {
-          display: grid;
-          grid-template-columns: repeat(4, 1fr);
-          gap: 1.5rem;
-          margin-bottom: 2rem;
-          width: 100%;
-        }
-        .stat-card {
-          border-radius: 1rem;
-          padding: 2rem;
-          color: white;
-          display: flex;
-          flex-direction: column;
-          gap: 1.5rem;
-          position: relative;
-          overflow: hidden;
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
-          backdrop-filter: blur(4px);
-          transition: all 0.3s ease;
-          cursor: pointer;
-        }
-        .stat-card:hover {
-          transform: translateY(-8px);
-          box-shadow: 0 12px 48px 0 rgba(31, 38, 135, 0.25);
-          border-color: rgba(255, 255, 255, 0.2);
-        }
-        .stat-card::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          right: 0;
-          width: 150px;
-          height: 150px;
-          background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
-          border-radius: 50%;
-          transform: translate(40%, -40%);
-        }
-        .stat-header {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          position: relative;
-          z-index: 1;
-        }
-        .stat-badge {
-          font-size: 0.75rem;
-          font-weight: 600;
-          background-color: rgba(255, 255, 255, 0.15);
-          padding: 0.5rem 1rem;
-          border-radius: 0.5rem;
-          backdrop-filter: blur(10px);
-          border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        .stat-value {
-          font-size: 2.5rem;
-          font-weight: bold;
-          position: relative;
-          z-index: 1;
-        }
-        .stat-label {
-          font-size: 0.95rem;
-          opacity: 0.95;
-          position: relative;
-          z-index: 1;
-          font-weight: 500;
-        }
-        .stat-change {
-          font-size: 0.8rem;
-          opacity: 0.85;
-          position: relative;
-          z-index: 1;
-        }
-        @media (max-width: 1024px) {
-          .charts-grid {
-            grid-template-columns: repeat(2, 1fr);
-          }
-          .stats-grid {
-            grid-template-columns: repeat(2, 1fr);
-          }
-        }
-        @media (max-width: 768px) {
-          .charts-grid {
-            grid-template-columns: 1fr;
-          }
-          .stats-grid {
-            grid-template-columns: 1fr;
-          }
-        }
-        .modal-overlay {
-          position: fixed;
-          inset: 0;
-          background-color: rgba(0, 0, 0, 0.5);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 1rem;
-          z-index: 50;
-        }
-        .modal {
-          background-color: white;
-          border-radius: 0.5rem;
-          width: 100%;
-          max-width: 56rem;
-          max-height: 90vh;
-          overflow-y: auto;
-        }
-        .modal-header {
-          position: sticky;
-          top: 0;
-          background-color: white;
-          border-bottom: 1px solid #e2e8f0;
-          padding: 2rem;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-        }
-        .modal-header-content h2 {
-          font-size: 1.875rem;
-          font-weight: bold;
-          color: #1e293b;
-        }
-        .modal-header-content p {
-          font-size: 0.875rem;
-          color: #64748b;
-          margin-top: 0.25rem;
-        }
-        .modal-close-btn {
-          padding: 0.5rem;
-          background-color: transparent;
-          border: none;
-          border-radius: 0.5rem;
-          cursor: pointer;
-          transition: background-color 0.2s;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 1.5rem;
-        }
-        .modal-close-btn:hover {
-          background-color: #f1f5f9;
-        }
-        .modal-content {
-          padding: 2rem;
-        }
-        .metrics-grid {
-          display: grid;
-          grid-template-columns: repeat(5, 1fr);
-          gap: 1rem;
-          margin-bottom: 2rem;
-        }
-        .metric-card {
-          background-color: #f8fafc;
-          padding: 1rem;
-          border-radius: 0.5rem;
-          border: 1px solid #e2e8f0;
-        }
-        .metric-header {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          margin-bottom: 0.5rem;
-        }
-        .metric-icon {
-          width: 40px;
-          height: 40px;
-          border-radius: 0.5rem;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 1.5rem;
-        }
-        .metric-icon-blue {
-          background-color: #dbeafe;
-          color: #2563eb;
-        }
-        .metric-icon-emerald {
-          background-color: #d1fae5;
-          color: #059669;
-        }
-        .metric-icon-yellow {
-          background-color: #fef3c7;
-          color: #d97706;
-        }
-        .metric-icon-red {
-          background-color: #fee2e2;
-          color: #dc2626;
-        }
-        .metric-icon-purple {
-          background-color: #e9d5ff;
-          color: #a855f7;
-        }
-        .metric-change {
-          font-size: 0.75rem;
-          font-weight: 600;
-        }
-        .change-green {
-          color: #16a34a;
-        }
-        .change-gray {
-          color: #64748b;
-        }
-        .metric-value {
-          font-size: 1.875rem;
-          font-weight: bold;
-          color: #1e293b;
-          margin-bottom: 0.25rem;
-        }
-        .metric-label {
-          font-size: 0.75rem;
-          color: #64748b;
-        }
-        .timeline-section {
-          background-color: #f8fafc;
-          border-radius: 0.5rem;
-          border: 1px solid #e2e8f0;
-          padding: 1.5rem;
-        }
-        .timeline-header {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          margin-bottom: 1.5rem;
-        }
-        .timeline-title h3 {
-          font-size: 1.125rem;
-          font-weight: bold;
-          color: #1e293b;
-          margin-bottom: 0.25rem;
-        }
-        .timeline-title p {
-          font-size: 0.875rem;
-          color: #64748b;
-        }
-        .view-all-link {
-          font-size: 0.875rem;
-          font-weight: 500;
-          color: #2563eb;
-          text-decoration: none;
-          cursor: pointer;
-          transition: color 0.2s;
-        }
-        .view-all-link:hover {
-          color: #1d4ed8;
-        }
-        .timeline-events {
-          display: flex;
-          flex-direction: column;
-          gap: 1.5rem;
-        }
-        .timeline-event {
-          display: flex;
-          gap: 1rem;
-        }
-        .timeline-event-icon {
-          width: 40px;
-          height: 40px;
-          border-radius: 0.5rem;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          flex-shrink: 0;
-          margin-top: 0.25rem;
-          font-size: 1.25rem;
-        }
-        .event-icon-red {
-          background-color: #fee2e2;
-          color: #dc2626;
-        }
-        .event-icon-blue {
-          background-color: #dbeafe;
-          color: #2563eb;
-        }
-        .event-icon-green {
-          background-color: #dcfce7;
-          color: #16a34a;
-        }
-        .event-icon-yellow {
-          background-color: #fef3c7;
-          color: #d97706;
-        }
-        .timeline-event-content {
-          flex: 1;
-          min-width: 0;
-        }
-        .timeline-event-header {
-          display: flex;
-          align-items: start;
-          justify-content: space-between;
-        }
-        .event-title {
-          font-weight: 600;
-          color: #1e293b;
-          margin-bottom: 0.25rem;
-        }
-        .event-description {
-          font-size: 0.875rem;
-          color: #64748b;
-          margin-top: 0.25rem;
-        }
-        .event-badges {
-          display: flex;
-          gap: 0.5rem;
-          margin-top: 0.5rem;
-          flex-wrap: wrap;
-        }
-        .event-badge {
-          display: inline-block;
-          padding: 0.25rem 0.5rem;
-          border-radius: 0.375rem;
-          font-size: 0.75rem;
-          font-weight: 600;
-        }
-        .event-badge-red {
-          background-color: #fee2e2;
-          color: #b91c1c;
-        }
-        .event-badge-blue {
-          background-color: #dbeafe;
-          color: #1e40af;
-        }
-        .event-badge-green {
-          background-color: #dcfce7;
-          color: #15803d;
-        }
-        .event-badge-gray {
-          background-color: #f3f4f6;
-          color: #374151;
-        }
-        .event-badge-emerald {
-          background-color: #d1fae5;
-          color: #065f46;
-        }
-        .event-time {
-          font-size: 0.875rem;
-          font-weight: 500;
-          color: #64748b;
-          flex-shrink: 0;
-        }
-        .event-time-red {
-          color: #dc2626;
-        }
-        .chart-menu {
-          position: absolute;
-          top: 1rem;
-          right: 1rem;
-          background: white;
-          border: 1px solid #e2e8f0;
-          border-radius: 0.375rem;
-          padding: 0.5rem;
-          cursor: pointer;
-          font-size: 1.25rem;
-        }
-      `}</style>
-      <main>
-        {/* CONTENT */}
-        <div className="content-wrapper">
-          {/* Charts Grid */}
-          <div className="charts-grid">
-            {/* Risk Trend Analysis Chart */}
-            <div className="chart-card" style={{ position: "relative" }}>
-              <div className="chart-title">Risk Trend Analysis</div>
-              <div className="chart-menu">⋮</div>
-              <svg width="100%" height="240" viewBox="0 0 280 200" style={{ marginTop: "0.5rem" }}>
-                <defs>
-                  <linearGradient id="gridGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stopColor="#f0f4f8" stopOpacity="1" />
-                    <stop offset="100%" stopColor="#f8fafc" stopOpacity="1" />
-                  </linearGradient>
-                </defs>
-                {/* Background */}
-                <rect width="280" height="200" fill="url(#gridGrad)" />
-                {/* Grid lines */}
-                <line x1="20" y1="150" x2="260" y2="150" stroke="#e2e8f0" strokeWidth="1" />
-                <line x1="20" y1="110" x2="260" y2="110" stroke="#e2e8f0" strokeWidth="1" />
-                <line x1="20" y1="70" x2="260" y2="70" stroke="#e2e8f0" strokeWidth="1" />
-                {/* Live Risk Line (red) */}
-                <polyline points="30,140 90,110 150,80 210,40" fill="none" stroke="#ef4444" strokeWidth="2" />
-                {/* Predicted Risk Line (blue dashed) */}
-                <polyline
-                  points="30,145 90,120 150,95 210,60"
-                  fill="none"
-                  stroke="#3b82f6"
-                  strokeWidth="2"
-                  strokeDasharray="5,5"
-                />
-                {/* X-axis labels */}
-                <text x="30" y="175" fontSize="12" fill="#64748b" textAnchor="middle">
-                  W1
-                </text>
-                <text x="90" y="175" fontSize="12" fill="#64748b" textAnchor="middle">
-                  W2
-                </text>
-                <text x="150" y="175" fontSize="12" fill="#64748b" textAnchor="middle">
-                  W3
-                </text>
-                <text x="210" y="175" fontSize="12" fill="#64748b" textAnchor="middle">
-                  W4
-                </text>
-                {/* Y-axis labels */}
-                <text x="12" y="155" fontSize="11" fill="#64748b" textAnchor="end">
-                  2.5
-                </text>
-                <text x="12" y="115" fontSize="11" fill="#64748b" textAnchor="end">
-                  5
-                </text>
-                <text x="12" y="75" fontSize="11" fill="#64748b" textAnchor="end">
-                  7.5
-                </text>
-              </svg>
-              <div style={{ display: "flex", gap: "1.5rem", fontSize: "0.75rem", marginTop: "0.5rem" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
-                  <div style={{ width: "12px", height: "2px", backgroundColor: "#ef4444" }}></div>
-                  <span style={{ color: "#64748b" }}>Live Risk</span>
-                </div>
-                <div style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
-                  <div
-                    style={{
-                      width: "12px",
-                      height: "2px",
-                      backgroundColor: "#3b82f6",
-                      borderTop: "1px dashed #3b82f6",
-                    }}
-                  ></div>
-                  <span style={{ color: "#64748b" }}>Predicted Risk</span>
-                </div>
-              </div>
-            </div>
+    <animated.div style={fadeIn} className="space-y-6 p-4 sm:p-6">
+      {/* Header */}
+      <motion.div 
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-2"
+      >
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-slate-900 to-blue-700 bg-clip-text text-transparent">
+            Disease Surveillance Dashboard
+          </h1>
+          <p className="text-slate-600 text-sm mt-1">Real-time monitoring & predictive analytics across districts</p>
+        </div>
+        <motion.div 
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-700 shadow-sm"
+        >
+          <span>Last updated: Just now</span>
+          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+        </motion.div>
+      </motion.div>
 
-            {/* Worker Distribution Chart */}
-            <div className="chart-card" style={{ position: "relative" }}>
-              <div className="chart-title">Worker Distribution</div>
-              <div className="chart-menu">⋮</div>
-              <svg width="100%" height="240" viewBox="0 0 280 200" style={{ marginTop: "0.5rem" }}>
-                {/* Pie Chart */}
-                <circle cx="100" cy="100" r="70" fill="#3b82f6" />
-                <circle
-                  cx="100"
-                  cy="100"
-                  r="70"
-                  fill="none"
-                  stroke="#06b6d4"
-                  strokeWidth="35"
-                  strokeDasharray="48.7 307"
-                  strokeDashoffset="0"
-                />
-                <circle
-                  cx="100"
-                  cy="100"
-                  r="70"
-                  fill="none"
-                  stroke="#f59e0b"
-                  strokeWidth="35"
-                  strokeDasharray="48.7 307"
-                  strokeDashoffset="-48.7"
-                />
-                <circle
-                  cx="100"
-                  cy="100"
-                  r="70"
-                  fill="none"
-                  stroke="#a855f7"
-                  strokeWidth="35"
-                  strokeDasharray="38.4 307"
-                  strokeDashoffset="-97.4"
-                />
-                <circle
-                  cx="100"
-                  cy="100"
-                  r="70"
-                  fill="none"
-                  stroke="#6366f1"
-                  strokeWidth="35"
-                  strokeDasharray="28.0 307"
-                  strokeDashoffset="-135.8"
-                />
-                {/* Labels */}
-                <text x="160" y="80" fontSize="11" fontWeight="600" fill="#1e293b">
-                  Breakdown
-                </text>
-                <text x="160" y="95" fontSize="10" fill="#64748b">
-                  27%
-                </text>
-                <text x="160" y="115" fontSize="11" fontWeight="600" fill="#1e293b">
-                  Unbroken
-                </text>
-                <text x="160" y="130" fontSize="10" fill="#64748b">
-                  29%
-                </text>
-              </svg>
-            </div>
-
-            {/* Incident Categories Chart */}
-            <div className="chart-card" style={{ position: "relative" }}>
-              <div className="chart-title">Incident Categories</div>
-              <div className="chart-menu">⋮</div>
-              <svg width="100%" height="240" viewBox="0 0 280 200" style={{ marginTop: "0.5rem" }}>
-                {/* Bars */}
-                <rect x="20" y="60" width="35" height="100" fill="#ef4444" />
-                <rect x="65" y="90" width="35" height="70" fill="#f97316" />
-                <rect x="110" y="110" width="35" height="50" fill="#eab308" />
-                <rect x="155" y="130" width="35" height="30" fill="#22c55e" />
-                <rect x="200" y="140" width="35" height="20" fill="#06b6d4" />
-                {/* Labels */}
-                <text x="37" y="175" fontSize="10" fill="#64748b" textAnchor="middle">
-                  Construction
-                </text>
-                <text x="82" y="175" fontSize="10" fill="#64748b" textAnchor="middle">
-                  Non-injury
-                </text>
-                <text x="127" y="175" fontSize="10" fill="#64748b" textAnchor="middle">
-                  Slip/Trips
-                </text>
-                <text x="172" y="175" fontSize="10" fill="#64748b" textAnchor="middle">
-                  Sprains
-                </text>
-                <text x="217" y="175" fontSize="10" fill="#64748b" textAnchor="middle">
-                  Other
-                </text>
-                {/* Y-axis */}
-                <line x1="15" y1="20" x2="15" y2="160" stroke="#cbd5e1" strokeWidth="1" />
-                <line x1="15" y1="160" x2="250" y2="160" stroke="#cbd5e1" strokeWidth="1" />
-                {/* Y-axis labels */}
-                <text x="10" y="165" fontSize="10" fill="#64748b" textAnchor="end">
-                  0
-                </text>
-                <text x="10" y="125" fontSize="10" fill="#64748b" textAnchor="end">
-                  50
-                </text>
-                <text x="10" y="85" fontSize="10" fill="#64748b" textAnchor="end">
-                  100
-                </text>
-              </svg>
-            </div>
-          </div>
-          {/* District Table */}
-          <div className="card">
-            <div className="card-header">
-              <div>
-                <div className="card-title">
-                  <h2>District-wise Risk Summary</h2>
-                  <p>Comprehensive overview of worker safety metrics across all districts</p>
-                </div>
-              </div>
-              <div className="card-actions">
-                <button className="btn">📊 Filter</button>
-                <button className="btn">📈 Sort</button>
-              </div>
-            </div>
-            <div style={{ overflowX: "auto" }}>
-              <table>
-                <thead>
-                  <tr>
-                    <th>DISTRICT</th>
-                    <th>WORKER COUNT</th>
-                    <th>LIVE RISK SCORE</th>
-                    <th>PREDICTED RISK SCORE</th>
-                    <th>HIGH-RISK WORKSITES</th>
-                    <th>ACTIONS</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {districts.map((item) => (
-                    <tr key={item.id}>
-                      <td>
-                        <div className="district-cell">
-                          <span>{item.icon}</span>
-                          <span>{item.district}</span>
-                        </div>
-                      </td>
-                      <td>{item.workers}</td>
-                      <td>
-                        <span
-                          className={`badge ${
-                            item.color === "red"
-                              ? "badge-red"
-                              : item.color === "orange"
-                                ? "badge-orange"
-                                : item.color === "yellow"
-                                  ? "badge-yellow"
-                                  : "badge-green"
-                          }`}
-                        >
-                          {item.liveRisk}
-                        </span>
-                      </td>
-                      <td>
-                        <span
-                          className={`badge ${
-                            item.predictedRisk.includes("High") || item.predictedRisk.includes("Critical")
-                              ? "badge-red"
-                              : item.predictedRisk.includes("Moderate")
-                                ? "badge-yellow"
-                                : "badge-green"
-                          }`}
-                        >
-                          {item.predictedRisk}
-                        </span>
-                      </td>
-                      <td>{item.highRisk}</td>
-                      <td>
-                        <button onClick={() => setSelectedDistrict(item)} className="view-details-link">
-                          View Details →
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            <div className="pagination">
-              <p style={{ fontSize: "0.875rem", color: "#64748b" }}>Showing 8 of 14 districts</p>
-              <div className="pagination-buttons">
-                <button className="btn">Previous</button>
-                <button className="btn-next">Next</button>
-              </div>
-            </div>
-          </div>
-          {/* Active Alerts & Notifications */}
-          <div className="alerts-section">
-            <div className="alerts-header">
-              <div className="alerts-title">
-                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                  <span style={{ color: "#dc2626" }}>🚨</span>
-                  <h3>Active Alerts & Notifications</h3>
-                </div>
-                <p>Real-time updates on critical safety issues</p>
-              </div>
-              <button className="view-all-btn">View All Alerts</button>
-            </div>
-            <div className="alerts-list">
-              {alerts.map((alert) => (
-                <div
-                  key={alert.id}
-                  className="alert-item"
-                  style={{
-                    backgroundColor: alert.bgColor,
-                    borderLeftColor: alert.borderColor,
-                  }}
-                >
-                  <div className="alert-icon">{alert.icon}</div>
-                  <div className="alert-content">
-                    <div className="alert-title">{alert.title}</div>
-                    <div className="alert-description">{alert.description}</div>
-                    <div className="alert-actions">
-                      {alert.actions.map((action, idx) => (
-                        <a key={idx} className="alert-action-link">
-                          {action}
-                        </a>
-                      ))}
-                    </div>
+      {/* Stats Cards Grid */}
+      <motion.div 
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+      >
+        {stats.map((stat, idx) => (
+          <motion.div
+            key={idx}
+            variants={itemVariants}
+            custom={idx}
+            whileHover="hover"
+            className="relative group"
+          >
+            <div className="bg-white rounded-xl p-5 border border-slate-100 shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden">
+              {/* Gradient overlay on hover */}
+              <div className="absolute inset-0 bg-gradient-to-br from-transparent to-blue-50 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              
+              <div className="relative z-10">
+                <div className="flex justify-between items-start mb-4">
+                  <div className={`p-2.5 rounded-lg ${
+                    stat.badge === 'Live' ? 'bg-gradient-to-br from-green-50 to-emerald-50 text-green-600' :
+                    stat.badge === 'Active' ? 'bg-gradient-to-br from-blue-50 to-cyan-50 text-blue-600' :
+                    stat.badge === 'AI' ? 'bg-gradient-to-br from-purple-50 to-violet-50 text-purple-600' :
+                    'bg-gradient-to-br from-orange-50 to-amber-50 text-orange-600'
+                  }`}>
+                    <stat.icon className="h-5 w-5" />
                   </div>
-                  <div className="alert-time">{alert.time}</div>
+                  <motion.span 
+                    className={`text-xs font-bold px-2.5 py-1 rounded-full ${stat.badgeColor} flex items-center gap-1`}
+                    animate={{ scale: [1, 1.1, 1] }}
+                    transition={{ 
+                      duration: 2, 
+                      repeat: Infinity,
+                      repeatType: "reverse",
+                      delay: idx * 0.3
+                    }}
+                  >
+                    {stat.badge}
+                    {stat.badge === "Live" && (
+                      <span className="relative flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                      </span>
+                    )}
+                  </motion.span>
                 </div>
-              ))}
-            </div>
-          </div>
-          {/* Stats Grid */}
-          <div className="stats-grid">
-            {stats.map((stat, idx) => (
-              <div key={idx} className="stat-card" style={{ backgroundColor: stat.bgColor }}>
-                <div className="stat-header">
-                  <div></div>
-                  <div className="stat-badge">{stat.badge}</div>
+                
+                <div className="space-y-1">
+                  <motion.h3 
+                    className="text-2xl sm:text-3xl font-bold text-slate-900"
+                    initial={{ scale: 0.8 }}
+                    animate={{ scale: 1 }}
+                    transition={{ delay: 0.5 + idx * 0.1 }}
+                  >
+                    {stat.value}
+                  </motion.h3>
+                  <p className="text-sm font-medium text-slate-500">{stat.label}</p>
                 </div>
-                <div className="stat-value">{stat.value}</div>
-                <div className="stat-label">{stat.label}</div>
-                <div className="stat-change">{stat.change}</div>
+
+                <div className="mt-4 flex items-center gap-2">
+                  <span className={`text-xs font-semibold px-2 py-1 rounded-lg flex items-center gap-1 ${
+                    stat.trend === 'up' ? 'bg-green-50 text-green-700' : 'bg-orange-50 text-orange-700'
+                  }`}>
+                    {stat.trend === 'up' ? (
+                      <ArrowUp className="h-3 w-3" />
+                    ) : (
+                      <ArrowDown className="h-3 w-3" />
+                    )}
+                    {stat.change}
+                  </span>
+                  <span className="text-xs text-slate-400">vs last month</span>
+                </div>
               </div>
+            </div>
+          </motion.div>
+        ))}
+      </motion.div>
+
+      {/* Alerts & Risk Trend Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Alerts Section */}
+        <motion.div 
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.4 }}
+          className="lg:col-span-2 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden"
+        >
+          <div className="p-6 border-b border-slate-200 flex justify-between items-center bg-gradient-to-r from-slate-50 to-white">
+            <div className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-red-500 animate-pulse" />
+              <h3 className="font-semibold text-slate-900">Active Alerts</h3>
+            </div>
+            <motion.button 
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="text-sm text-blue-600 hover:text-blue-700 font-medium hover:underline flex items-center gap-1"
+            >
+              View All <ChevronRight className="h-3 w-3" />
+            </motion.button>
+          </div>
+          
+          <div className="p-6 space-y-4">
+            {alerts.map((alert, idx) => (
+              <motion.div
+                key={alert.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 + idx * 0.1 }}
+                whileHover={{ x: 4 }}
+                className={`p-4 rounded-lg border-l-4 ${alert.bgColor} ${alert.borderColor} flex items-start gap-4 transition-all duration-200 cursor-pointer`}
+              >
+                <alert.icon className={`h-5 w-5 mt-0.5 ${alert.iconColor}`} />
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <h4 className="text-sm font-semibold text-slate-900">{alert.title}</h4>
+                    <motion.span 
+                      className="text-[10px] font-bold px-2 py-0.5 rounded-full text-white"
+                      style={{ 
+                        backgroundColor: alert.severity === 'critical' ? '#ef4444' : 
+                                       alert.severity === 'warning' ? '#f59e0b' : 
+                                       alert.severity === 'info' ? '#3b82f6' : '#10b981' 
+                      }}
+                      animate={{ scale: [1, 1.1, 1] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    >
+                      {alert.severity.toUpperCase()}
+                    </motion.span>
+                  </div>
+                  <p className="text-xs text-slate-600 mt-1">{alert.description}</p>
+                  <div className="mt-3 flex gap-3">
+                    {alert.actions.map((action, i) => (
+                      <motion.button 
+                        key={i}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="text-xs font-medium text-blue-600 hover:text-blue-800 hover:underline"
+                      >
+                        {action}
+                      </motion.button>
+                    ))}
+                  </div>
+                </div>
+                <span className="text-xs text-slate-400 whitespace-nowrap">{alert.time}</span>
+              </motion.div>
             ))}
           </div>
-        </div>
-        {/* MODAL - DISTRICT DETAILS */}
-        {selectedDistrict && (
-          <div className="modal-overlay">
-            <div className="modal">
-              {/* Modal Header */}
-              <div className="modal-header">
-                <div className="modal-header-content">
-                  <h2>{selectedDistrict.district}</h2>
-                  <p>District-wise detailed analysis and metrics</p>
-                </div>
-                <button onClick={() => setSelectedDistrict(null)} className="modal-close-btn">
-                  ✕
-                </button>
-              </div>
-              {/* Modal Content */}
-              <div className="modal-content">
-                {/* METRICS GRID */}
-                <div className="metrics-grid">
-                  {/* Total Workers */}
-                  <div className="metric-card">
-                    <div className="metric-header">
-                      <div className="metric-icon metric-icon-blue">👥</div>
-                      <span className="metric-change change-green">+12%</span>
-                    </div>
-                    <p className="metric-value">{selectedDistrict.workers}</p>
-                    <p className="metric-label">Total Registered Workers</p>
-                  </div>
-                  {/* Active Worksites */}
-                  <div className="metric-card">
-                    <div className="metric-header">
-                      <div className="metric-icon metric-icon-emerald">📖</div>
-                      <span className="metric-change change-green">+8%</span>
-                    </div>
-                    <p className="metric-value">3,847</p>
-                    <p className="metric-label">Active Worksites</p>
-                  </div>
-                  {/* Active Complaints */}
-                  <div className="metric-card">
-                    <div className="metric-header">
-                      <div className="metric-icon metric-icon-yellow">⚠️</div>
-                      <span className="metric-change change-gray">-</span>
-                    </div>
-                    <p className="metric-value">247</p>
-                    <p className="metric-label">Active Complaints</p>
-                  </div>
-                  {/* Critical Risk Zones */}
-                  <div className="metric-card">
-                    <div className="metric-header">
-                      <div className="metric-icon metric-icon-red">🚨</div>
-                      <span className="metric-change change-gray">-</span>
-                    </div>
-                    <p className="metric-value">18</p>
-                    <p className="metric-label">Critical Risk Zones</p>
-                  </div>
-                  {/* Safety Compliance Rate */}
-                  <div className="metric-card">
-                    <div className="metric-header">
-                      <div className="metric-icon metric-icon-purple">📈</div>
-                      <span className="metric-change change-green">+8%</span>
-                    </div>
-                    <p className="metric-value">94.2%</p>
-                    <p className="metric-label">Safety Compliance Rate</p>
-                  </div>
-                </div>
-                {/* RECENT ACTIVITY TIMELINE */}
-                <div className="timeline-section">
-                  <div className="timeline-header">
-                    <div className="timeline-title">
-                      <h3>Recent Activity Timeline</h3>
-                      <p>Latest updates and system events</p>
-                    </div>
-                    <a className="view-all-link">View All</a>
-                  </div>
-                  <div className="timeline-events">
-                    {/* Critical Alert */}
-                    <div className="timeline-event">
-                      <div className="timeline-event-icon event-icon-red">🚨</div>
-                      <div className="timeline-event-content">
-                        <div className="timeline-event-header">
-                          <div>
-                            <div className="event-title">Critical Alert Triggered</div>
-                            <p className="event-description">
-                              Safety violation detected at Construction Site B-247, {selectedDistrict.district} district
-                            </p>
-                            <div className="event-badges">
-                              <span className="event-badge event-badge-red">Critical</span>
-                              <span className="event-badge event-badge-blue">Inspection Required</span>
-                            </div>
-                          </div>
-                          <span className="event-time event-time-red">5 minutes ago</span>
-                        </div>
-                      </div>
-                    </div>
-                    {/* AI Prediction */}
-                    <div className="timeline-event">
-                      <div className="timeline-event-icon event-icon-blue">⚡</div>
-                      <div className="timeline-event-content">
-                        <div className="timeline-event-header">
-                          <div>
-                            <div className="event-title">AI Prediction Generated</div>
-                            <p className="event-description">
-                              New 7-day risk forecast completed for all districts with 91.4% accuracy
-                            </p>
-                            <div className="event-badges">
-                              <span className="event-badge event-badge-blue">AI Analysis</span>
-                              <span className="event-badge event-badge-emerald">Forecast Available</span>
-                            </div>
-                          </div>
-                          <span className="event-time">23 minutes ago</span>
-                        </div>
-                      </div>
-                    </div>
-                    {/* Inspection Completed */}
-                    <div className="timeline-event">
-                      <div className="timeline-event-icon event-icon-green">✓</div>
-                      <div className="timeline-event-content">
-                        <div className="timeline-event-header">
-                          <div>
-                            <div className="event-title">Inspection Completed</div>
-                            <p className="event-description">
-                              Inspector Rajesh Kumar completed routine inspection at Site A-189,{" "}
-                              {selectedDistrict.district}
-                            </p>
-                            <div className="event-badges">
-                              <span className="event-badge event-badge-green">Completed</span>
-                              <span className="event-badge event-badge-gray">No Issues Found</span>
-                            </div>
-                          </div>
-                          <span className="event-time">1 hour ago</span>
-                        </div>
-                      </div>
-                    </div>
-                    {/* New Complaint */}
-                    <div className="timeline-event">
-                      <div className="timeline-event-icon event-icon-yellow">📖</div>
-                      <div className="timeline-event-content">
-                        <div className="timeline-event-header">
-                          <div>
-                            <div className="event-title">New Complaint Filed</div>
-                            <p className="event-description">
-                              Worker health complaint registered for Fish Processing Zone, {selectedDistrict.district}
-                            </p>
-                            <div className="event-badges">
-                              <span className="event-badge" style={{ backgroundColor: "#fef3c7", color: "#b45309" }}>
-                                Pending Review
-                              </span>
-                              <span className="event-badge" style={{ backgroundColor: "#fef3c7", color: "#b45309" }}>
-                                Health & Safety
-                              </span>
-                            </div>
-                          </div>
-                          <span className="event-time">2 hours ago</span>
-                        </div>
-                      </div>
-                    </div>
-                    {/* Training Session */}
-                    <div className="timeline-event">
-                      <div className="timeline-event-icon" style={{ backgroundColor: "#e9d5ff", color: "#a855f7" }}>
-                        📖
-                      </div>
-                      <div className="timeline-event-content">
-                        <div className="timeline-event-header">
-                          <div>
-                            <div className="event-title">Training Session Scheduled</div>
-                            <p className="event-description">
-                              Safety training program scheduled for 150 workers in {selectedDistrict.district}{" "}
-                              manufacturing belt
-                            </p>
-                            <div className="event-badges">
-                              <span className="event-badge" style={{ backgroundColor: "#e9d5ff", color: "#7e22ce" }}>
-                                Training
-                              </span>
-                              <span className="event-badge" style={{ backgroundColor: "#e9d5ff", color: "#7e22ce" }}>
-                                Dec 15, 2024
-                              </span>
-                            </div>
-                          </div>
-                          <span className="event-time">3 hours ago</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+        </motion.div>
+
+        {/* Risk Trend Chart */}
+        <motion.div 
+          variants={cardVariants}
+          initial="hidden"
+          animate="visible"
+          whileHover="hover"
+          className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm flex flex-col"
+        >
+          <div className="flex justify-between items-center mb-6">
+            <div>
+              <h3 className="font-semibold text-slate-900">Risk Trend Analysis</h3>
+              <p className="text-xs text-slate-400">Live vs Predicted risk</p>
+            </div>
+            <motion.button 
+              whileHover={{ rotate: 90 }}
+              whileTap={{ scale: 0.9 }}
+              className="text-slate-400 hover:text-slate-600"
+            >
+              <Filter className="h-4 w-4" />
+            </motion.button>
+          </div>
+          
+          <div className="flex-1 flex items-center justify-center relative">
+            <svg width="100%" height="180" viewBox="0 0 280 150" className="overflow-visible">
+              <defs>
+                <linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#ef4444" stopOpacity="0.3"/>
+                  <stop offset="100%" stopColor="#ef4444" stopOpacity="0"/>
+                </linearGradient>
+                <linearGradient id="predictionGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.3"/>
+                  <stop offset="100%" stopColor="#3b82f6" stopOpacity="0"/>
+                </linearGradient>
+              </defs>
+
+              {/* Grid Lines */}
+              {[0, 37.5, 75, 112.5, 150].map((y, i) => (
+                <motion.line 
+                  key={i} 
+                  x1="0" y1={y} x2="280" y2={y} 
+                  stroke="#f1f5f9" 
+                  strokeWidth="1"
+                  initial={{ pathLength: 0 }}
+                  animate={{ pathLength: 1 }}
+                  transition={{ duration: 1, delay: i * 0.1 }}
+                />
+              ))}
+
+              {/* Live Risk Line */}
+              <motion.path 
+                d="M0,120 Q70,90 140,60 T280,20" 
+                fill="none" 
+                stroke="#ef4444" 
+                strokeWidth="3" 
+                strokeLinecap="round"
+                initial={{ pathLength: 0 }}
+                animate={{ pathLength: 1 }}
+                transition={{ duration: 1.5, ease: "easeOut" }}
+              />
+              
+              {/* Prediction Line */}
+              <motion.path 
+                d="M0,130 Q70,100 140,70 T280,30" 
+                fill="none" 
+                stroke="#3b82f6" 
+                strokeWidth="2" 
+                strokeLinecap="round"
+                strokeDasharray="5,5"
+                initial={{ pathLength: 0 }}
+                animate={{ pathLength: 1 }}
+                transition={{ duration: 1.5, delay: 0.3, ease: "easeOut" }}
+              />
+              
+              {/* Fill Area */}
+              <motion.path 
+                d="M0,120 Q70,90 140,60 T280,20 V150 H0 Z" 
+                fill="url(#areaGradient)" 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 1, delay: 0.5 }}
+              />
+
+              {/* Animated Points */}
+              {[120, 85, 50, 20].map((y, i) => (
+                <motion.circle 
+                  key={i} 
+                  cx={i * 93} 
+                  cy={y} 
+                  r="4" 
+                  fill="white" 
+                  stroke="#ef4444" 
+                  strokeWidth="2" 
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ delay: 1 + i * 0.2, type: "spring" }}
+                />
+              ))}
+            </svg>
+          </div>
+          
+          <div className="flex justify-between text-xs text-slate-400 mt-4 px-2">
+            {["Week 1", "Week 2", "Week 3", "Week 4"].map((week, i) => (
+              <motion.span 
+                key={i}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.5 + i * 0.1 }}
+              >
+                {week}
+              </motion.span>
+            ))}
+          </div>
+
+          {/* Legend */}
+          <div className="flex gap-4 mt-4 pt-4 border-t border-slate-100">
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-0.5 bg-red-500"></div>
+              <span className="text-xs text-slate-500">Live Risk</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-0.5 border-b-2 border-dashed border-blue-500"></div>
+              <span className="text-xs text-slate-500">Predicted</span>
             </div>
           </div>
+        </motion.div>
+      </div>
+
+      {/* District Table */}
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.6 }}
+        className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden"
+      >
+        <div className="p-6 border-b border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-slate-50 to-white">
+          <div>
+            <h2 className="text-lg font-bold text-slate-900">District Surveillance Summary</h2>
+            <p className="text-sm text-slate-500">Live monitoring of high-risk zones</p>
+          </div>
+          <div className="flex gap-2">
+            <motion.button 
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="flex items-center gap-2 px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 shadow-sm transition-all"
+            >
+              <Filter className="h-4 w-4" /> Filter
+            </motion.button>
+            <motion.button 
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg text-sm font-medium text-white shadow-sm shadow-blue-200 transition-all"
+            >
+              <Download className="h-4 w-4" /> Export Report
+            </motion.button>
+          </div>
+        </div>
+        
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm text-left">
+            <thead className="text-xs text-slate-500 uppercase bg-slate-50 border-b border-slate-200">
+              <tr>
+                <th className="px-6 py-4 font-semibold">District</th>
+                <th className="px-6 py-4 font-semibold">Workers Monitored</th>
+                <th className="px-6 py-4 font-semibold">Live Risk Score</th>
+                <th className="px-6 py-4 font-semibold">AI Prediction</th>
+                <th className="px-6 py-4 font-semibold">High Risk Sites</th>
+                <th className="px-6 py-4 font-semibold text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {districts.map((item, idx) => (
+                <motion.tr
+                  key={item.id}
+                  custom={idx}
+                  initial="hidden"
+                  animate="visible"
+                  variants={tableRowVariants}
+                  whileHover={{ backgroundColor: "rgba(241, 245, 249, 0.5)" }}
+                  onClick={() => setSelectedDistrict(item)}
+                  className="cursor-pointer transition-colors"
+                >
+                  <td className="px-6 py-4 font-medium text-slate-900">
+                    <div className="flex items-center gap-3">
+                      <span className="text-xl">{item.icon}</span>
+                      <div>
+                        <div className="font-semibold">{item.district}</div>
+                        <div className="text-xs text-slate-400">Active monitoring</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 text-slate-600">
+                    <div className="font-medium">{item.workers}</div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-3">
+                      <div className="relative w-20 h-2 bg-slate-200 rounded-full overflow-hidden">
+                        <motion.div 
+                          className={`absolute h-full ${
+                            item.color === 'red' ? 'bg-gradient-to-r from-red-500 to-red-400' : 
+                            item.color === 'orange' ? 'bg-gradient-to-r from-orange-500 to-orange-400' : 
+                            item.color === 'yellow' ? 'bg-gradient-to-r from-yellow-500 to-yellow-400' : 
+                            'bg-gradient-to-r from-green-500 to-green-400'
+                          }`}
+                          initial={{ width: 0 }}
+                          animate={{ width: `${item.riskLevel}%` }}
+                          transition={{ delay: 0.7 + idx * 0.05, duration: 0.8 }}
+                        />
+                      </div>
+                      <span className="text-xs font-medium text-slate-700">{item.liveRisk.split('-')[0]}</span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-3">
+                      <div className="relative w-20 h-2 bg-slate-200 rounded-full overflow-hidden">
+                        <motion.div 
+                          className="absolute h-full bg-gradient-to-r from-blue-500 to-blue-400"
+                          initial={{ width: 0 }}
+                          animate={{ width: `${parseInt(item.predictedRisk.split('-')[1]) * 10}%` }}
+                          transition={{ delay: 0.8 + idx * 0.05, duration: 0.8 }}
+                        />
+                      </div>
+                      <span className="text-xs text-slate-500">{item.predictedRisk.split('-')[0]}</span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium text-slate-900">{item.highRisk}</span>
+                      <span className="text-xs text-slate-400">sites</span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 text-right">
+                    <motion.button 
+                      whileHover={{ scale: 1.05, x: 4 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="text-blue-600 hover:text-blue-800 font-medium text-xs hover:underline flex items-center gap-1 justify-end"
+                    >
+                      View Details <ChevronRight className="h-3 w-3" />
+                    </motion.button>
+                  </td>
+                </motion.tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        
+        <div className="px-6 py-4 border-t border-slate-200 bg-slate-50 flex items-center justify-between">
+          <span className="text-xs text-slate-500">Showing 8 of 14 districts</span>
+          <div className="flex gap-2">
+            <motion.button 
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="px-3 py-1 border border-slate-300 rounded bg-white text-xs font-medium text-slate-600 hover:bg-slate-50"
+            >
+              Previous
+            </motion.button>
+            <motion.button 
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="px-3 py-1 border border-slate-300 rounded bg-white text-xs font-medium text-slate-600 hover:bg-slate-50"
+            >
+              Next
+            </motion.button>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Modal - District Details */}
+      <AnimatePresence>
+        {selectedDistrict && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+            onClick={() => setSelectedDistrict(null)}
+          >
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="p-6 border-b border-slate-100 flex justify-between items-center sticky top-0 bg-white z-10">
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">{selectedDistrict.icon}</span>
+                  <div>
+                    <h2 className="text-xl font-bold text-slate-900">
+                      {selectedDistrict.district}
+                    </h2>
+                    <p className="text-sm text-slate-500">Detailed Surveillance Report</p>
+                  </div>
+                </div>
+                <motion.button 
+                  whileHover={{ scale: 1.1, rotate: 90 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={() => setSelectedDistrict(null)}
+                  className="p-2 hover:bg-slate-100 rounded-full transition-colors"
+                >
+                  <X className="h-5 w-5 text-slate-500" />
+                </motion.button>
+              </div>
+              
+              <div className="p-6 space-y-6">
+                <div className="grid grid-cols-2 gap-4">
+                  <motion.div 
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="p-4 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl border border-blue-100"
+                  >
+                    <p className="text-xs text-blue-600 font-semibold uppercase tracking-wider">Total Workers</p>
+                    <p className="text-2xl font-bold text-slate-900 mt-1">{selectedDistrict.workers}</p>
+                    <p className="text-xs text-blue-500 mt-1">Active registrations</p>
+                  </motion.div>
+                  <motion.div 
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 }}
+                    className={`p-4 rounded-xl border ${
+                      selectedDistrict.color === 'red' ? 'bg-gradient-to-br from-red-50 to-rose-50 border-red-100' : 
+                      selectedDistrict.color === 'orange' ? 'bg-gradient-to-br from-orange-50 to-amber-50 border-orange-100' : 
+                      selectedDistrict.color === 'yellow' ? 'bg-gradient-to-br from-yellow-50 to-amber-50 border-yellow-100' : 
+                      'bg-gradient-to-br from-green-50 to-emerald-50 border-green-100'
+                    }`}
+                  >
+                    <p className={`text-xs font-semibold uppercase tracking-wider ${
+                      selectedDistrict.color === 'red' ? 'text-red-600' : 
+                      selectedDistrict.color === 'orange' ? 'text-orange-600' : 
+                      selectedDistrict.color === 'yellow' ? 'text-yellow-600' : 
+                      'text-green-600'
+                    }`}>
+                      Risk Status
+                    </p>
+                    <p className="text-2xl font-bold text-slate-900 mt-1">{selectedDistrict.liveRisk.split('-')[0]}</p>
+                    <p className="text-xs text-slate-500 mt-1">Score: {selectedDistrict.liveRisk.split('-')[1]}</p>
+                  </motion.div>
+                </div>
+
+                <motion.div 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.2 }}
+                  className="bg-slate-50 rounded-xl p-5 border border-slate-200"
+                >
+                  <h3 className="font-semibold text-slate-900 mb-4 flex items-center gap-2">
+                    <Activity className="h-4 w-4" /> Activity Timeline
+                  </h3>
+                  <div className="space-y-4">
+                    {[
+                      { title: "Routine Inspection Completed", time: "2 hours ago", status: "success" },
+                      { title: "Health Complaint Registered", time: "4 hours ago", status: "warning" },
+                      { title: "AI Risk Assessment Updated", time: "6 hours ago", status: "info" }
+                    ].map((item, i) => (
+                      <motion.div 
+                        key={i}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.3 + i * 0.1 }}
+                        className="flex gap-4"
+                      >
+                        <div className="flex flex-col items-center">
+                          <div className={`w-2 h-2 rounded-full ${
+                            item.status === 'success' ? 'bg-green-500' : 
+                            item.status === 'warning' ? 'bg-yellow-500' : 'bg-blue-500'
+                          }`}></div>
+                          {i !== 2 && <div className="w-0.5 h-full bg-slate-200 my-1"></div>}
+                        </div>
+                        <div className="pb-4">
+                          <p className="text-sm font-medium text-slate-900">{item.title}</p>
+                          <p className="text-xs text-slate-500 mt-0.5">Reported • {item.time}</p>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                </motion.div>
+              </div>
+              
+              <div className="p-6 border-t border-slate-100 bg-slate-50 flex justify-end gap-3 rounded-b-2xl">
+                <motion.button 
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setSelectedDistrict(null)}
+                  className="px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-200 rounded-lg transition-colors"
+                >
+                  Close
+                </motion.button>
+                <motion.button 
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 rounded-lg shadow-sm transition-colors"
+                >
+                  Download Full Report
+                </motion.button>
+              </div>
+            </motion.div>
+          </motion.div>
         )}
-      </main>
-    </>
+      </AnimatePresence>
+    </animated.div>
   )
 }

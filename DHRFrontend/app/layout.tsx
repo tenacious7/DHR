@@ -5,7 +5,6 @@ import { GeistMono } from "geist/font/mono"
 import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
 import { Suspense } from "react"
-import { ConditionalLayout } from "@/components/conditional-layout"
 
 export const metadata: Metadata = {
   title: "Health Dashboard",
@@ -20,9 +19,19 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="overflow-x-hidden">
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
+      </head>
       <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable} overflow-x-hidden`}>
-        <Suspense fallback={<div>Loading...</div>}>
-          <ConditionalLayout>{children}</ConditionalLayout>
+        <Suspense fallback={
+          <div className="min-h-screen flex items-center justify-center bg-gray-50">
+            <div className="text-center">
+              <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+              <p className="text-gray-600">Loading Health Portal...</p>
+            </div>
+          </div>
+        }>
+          {children}
         </Suspense>
         <Analytics />
       </body>
