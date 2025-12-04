@@ -3,7 +3,10 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"
+import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"
+import { AppSidebar } from "@/components/app-sidebar"
+import { DynamicHeader } from "@/components/dynamic-header"
+import { useIsMobile } from "@/hooks/use-mobile"
 import {
   Stethoscope,
   Calendar,
@@ -28,25 +31,24 @@ import { useRouter } from "next/navigation"
 
 export default function WorkerDashboard() {
   const router = useRouter()
+  const isMobile = useIsMobile()
 
   const handleLogout = () => {
     router.push("/")
   }
 
   return (
-    <SidebarInset>
-      <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
-        <SidebarTrigger className="-ml-1" />
-        <div className="flex items-center gap-2 flex-1">
-          <h1 className="text-lg font-semibold">Worker Health Dashboard</h1>
-        </div>
-        <Button variant="outline" size="sm" onClick={handleLogout} className="ml-auto bg-transparent">
-          <LogOut className="h-4 w-4 mr-1" />
-          Logout
-        </Button>
-      </header>
+    <SidebarProvider defaultOpen={true}>
+      <AppSidebar />
+      <SidebarInset>
+        <DynamicHeader leftChildren={isMobile ? <SidebarTrigger className="-ml-1" /> : null}>
+          <Button variant="outline" size="sm" onClick={handleLogout} className="bg-transparent">
+            <LogOut className="h-4 w-4 mr-1" />
+            Logout
+          </Button>
+        </DynamicHeader>
 
-      <div className="p-4 space-y-8">
+        <div className="p-4 space-y-8">
         {/* Profile Header */}
         <Card className="bg-gradient-to-r from-purple-500 to-blue-600 text-white border-0 shadow-xl">
           <CardContent className="p-8">
@@ -243,7 +245,10 @@ export default function WorkerDashboard() {
         <div>
           <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">Quick Actions</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer bg-blue-50 border-blue-200">
+            <Card
+              className="hover:shadow-lg transition-shadow cursor-pointer bg-blue-50 border-blue-200"
+              onClick={() => router.push("/dashboard/doctor")}
+            >
               <CardContent className="p-6 text-center">
                 <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
                   <Calendar className="h-6 w-6 text-blue-600" />
@@ -252,7 +257,10 @@ export default function WorkerDashboard() {
               </CardContent>
             </Card>
 
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer bg-green-50 border-green-200">
+            <Card
+              className="hover:shadow-lg transition-shadow cursor-pointer bg-green-50 border-green-200"
+              onClick={() => router.push("/dashboard/govt/health-records")}
+            >
               <CardContent className="p-6 text-center">
                 <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
                   <Download className="h-6 w-6 text-green-600" />
@@ -261,7 +269,10 @@ export default function WorkerDashboard() {
               </CardContent>
             </Card>
 
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer bg-purple-50 border-purple-200">
+            <Card
+              className="hover:shadow-lg transition-shadow cursor-pointer bg-purple-50 border-purple-200"
+              onClick={() => router.push("/dashboard/doctor")}
+            >
               <CardContent className="p-6 text-center">
                 <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
                   <Video className="h-6 w-6 text-purple-600" />
@@ -270,7 +281,10 @@ export default function WorkerDashboard() {
               </CardContent>
             </Card>
 
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer bg-yellow-50 border-yellow-200">
+            <Card
+              className="hover:shadow-lg transition-shadow cursor-pointer bg-yellow-50 border-yellow-200"
+              onClick={() => router.push("/dashboard/worker/medicines")}
+            >
               <CardContent className="p-6 text-center">
                 <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-3">
                   <Pill className="h-6 w-6 text-yellow-600" />
@@ -279,7 +293,10 @@ export default function WorkerDashboard() {
               </CardContent>
             </Card>
 
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer bg-red-50 border-red-200">
+            <Card
+              className="hover:shadow-lg transition-shadow cursor-pointer bg-red-50 border-red-200"
+              onClick={() => router.push("/dashboard/govt/health-records")}
+            >
               <CardContent className="p-6 text-center">
                 <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3">
                   <Heart className="h-6 w-6 text-red-600" />
@@ -288,7 +305,10 @@ export default function WorkerDashboard() {
               </CardContent>
             </Card>
 
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer bg-indigo-50 border-indigo-200">
+            <Card
+              className="hover:shadow-lg transition-shadow cursor-pointer bg-indigo-50 border-indigo-200"
+              onClick={() => router.push("/dashboard/worker/health-id")}
+            >
               <CardContent className="p-6 text-center">
                 <div className="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-3">
                   <Share className="h-6 w-6 text-indigo-600" />
@@ -298,7 +318,8 @@ export default function WorkerDashboard() {
             </Card>
           </div>
         </div>
-      </div>
-    </SidebarInset>
+        </div>
+      </SidebarInset>
+    </SidebarProvider>
   )
 }
